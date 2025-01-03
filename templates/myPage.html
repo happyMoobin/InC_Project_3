@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>myPage</title>
+    <link rel="icon" href="/static/image/favicon.png">
+    <!-- 부트스트랩 CSS 링크 -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Dancing Script 및 Nanum Pen Script 폰트 링크 -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+    <style>
+        .fancy-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5em;
+            text-align: center;
+            color: #333;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar-brand img {
+            width: 50px;
+            height: auto;
+        }
+        /* 내비게이션 링크 스타일 */
+        .navbar-nav .nav-link {
+            font-family: 'Nanum Pen Script', cursive; /* Nanum Pen Script 폰트 적용 */
+            color: #333; /* 텍스트 색상 조정 */
+            font-size: 24px; /* 폰트 사이즈 변경 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 네비게이션 바 추가 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.main') }}">
+            <img src="{{ url_for('static', filename='/image/logo.png') }}" alt="쇼핑몰 로고">
+        </a>  
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('product.addProduct') }}">상품 등록</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('board.view') }}">게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('product.createImage') }}">이미지 생성</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.myPage') }}">마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    {% if 'login_info' in session %}
+                        <a class="nav-link" href="{{ url_for('user.logout') }}">로그아웃</a>
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('user.login') }}">로그인</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- flash 메시지 표시 -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3 class="fancy-title">MyPage</h3>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">환영합니다, {{ user_data.name }}님!</h5>
+                        <p class="card-text">여기에서 귀하의 정보를 확인하고 크레딧을 충전할 수 있습니다.</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">이름: {{ user_data.name }}</li>
+                            <li class="list-group-item">이메일: {{ user_data.email }}</li>
+                            <li class="list-group-item">가입일: {{ user_data.signup_date }}</li>
+                            <li class="list-group-item">크레딧: {{ user_data.credit }}</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="/user/addCredit" class="btn btn-primary" style="margin-top: 10px;">크레딧 충전</a>
+                        <a href="/user/sellList" class="btn btn-secondary" style="margin-top: 10px;">판매 내역</a>
+                        <a href="/user/buyList" class="btn btn-secondary" style="margin-top: 10px;">구매 내역</a>
+                        <a href="{{ url_for('user.inquiry_history') }}" class="btn btn-secondary" style="margin-top: 10px;">문의 내역</a>
+                        <a href="/user/logout" class="btn btn-danger" style="margin-top: 10px;">로그아웃</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 부트스트랩 JS 및 의존성 링크 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

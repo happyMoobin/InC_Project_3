@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Create new Post</title>
+    <link rel="icon" href="/static/image/favicon.png">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 폰트 스타일 */
+        .fancy-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 네비게이션 바 스타일 */
+        .navbar-brand img {
+            width: 50px;
+            height: auto;
+        }
+        .navbar-nav .nav-link {
+            font-family: 'Nanum Pen Script', cursive;
+            font-size: 24px;
+            color: #555;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #007bff;
+        }
+        /* 제목 스타일 */
+        .fancy-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 버튼 스타일 */
+        .btn-submit {
+            font-size: 1.1em;
+            padding: 10px 20px;
+            background-color: #333;
+            border: none;
+            color: white;
+            border-radius: 0.25rem;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.main') }}">
+            <img src="{{ url_for('static', filename='/image/logo.png') }}" alt="쇼핑몰 로고">
+        </a>   
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('product.addProduct') }}">상품 등록</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('board.view') }}">게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('product.createImage') }}">이미지 생성</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.myPage') }}">마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    {% if 'login_info' in session %}
+                        <a class="nav-link" href="{{ url_for('user.logout') }}">로그아웃</a>
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('user.login') }}">로그인</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="fancy-title">Create new Post</h1>
+        <form method="POST" action="{{ url_for('board.newPost') }}">
+            <div class="form-group">
+                <label for="postTitle">글 제목</label>
+                <input type="text" class="form-control" id="postTitle" name="title" placeholder="제목을 입력하세요" required>
+            </div>
+            <div class="form-group">
+                <label for="postContent">글 내용</label>
+                <textarea class="form-control" id="postContent" name="content" placeholder="내용을 입력하세요" rows="6" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-submit btn-block">작성 완료</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

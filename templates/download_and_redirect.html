@@ -1,0 +1,30 @@
+<!-- 사용하지 않는 코드 -->
+<!-- <!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다운로드 중...</title>
+</head>
+<body>
+    <p>다운로드가 곧 시작됩니다. 잠시만 기다려 주세요...</p>
+    
+    <script>
+        // 파일을 다운로드하고 홈으로 리디렉션
+        const downloadUrl = "{{ download_url }}";
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = '';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // 다운로드 후 홈으로 리디렉션
+        setTimeout(() => {
+            window.location.href = "{{ url_for('main.main') }}";
+        }, 3000);  // 3초 대기 후 홈으로 이동
+    </script>
+</body>
+</html>
+ -->

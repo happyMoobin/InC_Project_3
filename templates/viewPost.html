@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Post</title>
+    <link rel="icon" href="/static/image/favicon.png">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 폰트 스타일 */
+        .fancy-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 네비게이션 바 스타일 */
+        .navbar-brand img {
+            width: 50px;
+            height: auto;
+        }
+        .navbar-nav .nav-link {
+            font-family: 'Nanum Pen Script', cursive;
+            font-size: 24px;
+            color: #555;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #007bff;
+        }
+        /* 제목 스타일 */
+        .fancy-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 게시글 스타일 */
+        .post-container, .comments-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .post-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .post-meta {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        .post-content {
+            font-size: 1.2em;
+            line-height: 1.6em;
+            color: #333;
+        }
+        
+        /* 댓글 스타일 */
+        .comment-card {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .comment-meta {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .comment-content {
+            font-size: 1em;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        /* 버튼 스타일 */
+        .btn-back, .btn-edit, .btn-comment {
+            font-size: 1em;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            border-radius: 0.25rem;
+            margin-top: 10px;
+            margin-right: 10px; /* 추가*/
+        }
+        .btn-back { background-color: #333; }
+        .btn-back:hover { background-color: #0056b3; }
+        .btn-edit { background-color: #007bff; }
+        .btn-edit:hover { background-color: #0056b3; }
+        .btn-comment { background-color: #007bff; }
+        .btn-comment:hover { background-color: #0056b3; }
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.main') }}">
+            <img src="{{ url_for('static', filename='/image/logo.png') }}" alt="쇼핑몰 로고">
+        </a>   
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('product.addProduct') }}">상품 등록</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('board.view') }}">게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('product.createImage') }}">이미지 생성</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.myPage') }}">마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    {% if 'login_info' in session %}
+                        <a class="nav-link" href="{{ url_for('user.logout') }}">로그아웃</a>
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('user.login') }}">로그인</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 플래시 메시지 표시 영역 -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="container mt-5">
+        <h1 class="fancy-title">Post Details</h1>
+        
+        <!-- 게시글 상세 내용 -->
+        <div class="post-container">
+            <div class="post-title">{{ post['title'] }}</div>
+            <div class="post-meta">
+                작성 날짜: {{ post['created_at'] }} 
+                {% if post['updated_at'] %}
+                    | 수정 날짜: {{ post['updated_at'] }}
+                {% endif %}
+                | 작성자: {{ user_name }}
+            </div>
+            <div class="post-content">{{ post['content'] }}</div>
+        </div>
+
+        <!-- 수정 버튼: 작성자만 보임 -->
+        <div class="mt-4 text-right">
+            {% if session['user_id'] == post['user_id'] %}
+            <a href="{{ url_for('board.editPost', post_id=post['post_id']) }}" class="btn btn-edit">수정하기</a>
+            {% endif %}
+            <a href="{{ url_for('board.view') }}" class="btn btn-back">목록으로 돌아가기</a>
+        </div>
+
+        <!-- 댓글 섹션 -->
+        <div class="comments-section mt-5">
+            <h2 class="fancy-title">Comments</h2>
+            <!-- 댓글 목록 -->
+            <div class="comment-list">
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <div class="comment-meta">
+                                <strong>{{ comment['user_name'] }}</strong> 
+                                <span class="text-muted">{{ comment['created_at'] }}</span>
+                            </div>
+                            <!-- 삭제 버튼: 댓글 작성자만 보임 -->
+                            {% if session['user_id'] == comment['user_id'] %}
+                            <form method="POST" action="{{ url_for('board.deleteComment', comment_id=comment['comment_id']) }}">
+                                <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        <div class="comment-content">{{ comment['content'] }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!</p>
+                {% endif %}
+            </div>
+
+            <!-- 댓글 작성 폼 -->
+            <div class="mt-4">
+                <form method="POST" action="{{ url_for('board.addComment', post_id=post['post_id']) }}">
+                    <div class="form-group">
+                        <textarea class="form-control" name="content" rows="3" placeholder="댓글을 입력하세요" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-comment">댓글 작성</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
