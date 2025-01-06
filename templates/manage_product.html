@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 관리</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+    {% include 'navigator.html' %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <script>
+                alert("{{ messages[0] }}");  // 첫 번째 메시지를 alert로 표시
+            </script>
+        {% endif %}
+    {% endwith %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">제품 관리</h1>
+        
+        <!-- 제품 추가 버튼 -->
+        <div class="text-right mb-4">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">
+                제품 추가
+            </button>
+        </div>
+
+        <!-- 제품 목록 -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>가격</th>
+                    <th>설명</th>
+                    <th>액션</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.product_id }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>
+                        <!-- 수정 버튼 -->
+                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#editProductModal{{ product.product_id }}">
+                            수정
+                        </button>
+                        <form method="POST" action="{{ url_for('admin.delete_product', product_id=product.product_id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+
+                <!-- 수정 모달 -->
+                <div class="modal fade" id="editProductModal{{ product.product_id }}" tabindex="-1" aria-labelledby="editProductModalLabel{{ product.product_id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editProductModalLabel{{ product.product_id }}">제품 수정</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form method="POST" action="{{ url_for('admin.update_product', product_id=product.product_id) }}" enctype="multipart/form-data">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="editProductName{{ product.product_id }}">제품 이름</label>
+                                        <input type="text" class="form-control" id="editProductName{{ product.product_id }}" name="name" value="{{ product.product_id }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editProductPrice{{ product.product_id }}">가격</label>
+                                        <input type="number" class="form-control" id="editProductPrice{{ product.product_id }}" name="price" value="{{ product.price }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editProductDescription{{ product.product_id }}">설명</label>
+                                        <textarea class="form-control" id="editProductDescription{{ product.product_id }}" name="description" rows="3" required>{{ product.description }}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editProductImage{{ product.product_id }}">이미지 업로드</label>
+                                        <input type="file" class="form-control-file" id="editProductImage{{ product.product_id }}" name="image" accept="image/*">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                                    <button type="submit" class="btn btn-primary">저장</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 제품 추가 모달 -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">제품 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- 파일 업로드를 위해 enctype 추가 -->
+                <form method="POST" action="{{ url_for('admin.add_product') }}" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="productName">제품 이름</label>
+                            <input type="text" class="form-control" id="productName" name="name" placeholder="제품 이름" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">가격</label>
+                            <input type="number" class="form-control" id="productPrice" name="price" placeholder="가격" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">설명</label>
+                            <textarea class="form-control" id="productDescription" name="description" placeholder="설명" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">이미지 업로드</label>
+                            <input type="file" class="form-control-file" id="productImage" name="image" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                        <button type="submit" class="btn btn-primary">추가</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
