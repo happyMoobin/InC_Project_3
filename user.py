@@ -63,3 +63,14 @@ def signup():
             return redirect(url_for('user.main'))
 
     return render_template('signup.html')
+
+@blueprint.route('/check_duplicate', methods=['POST'])
+def check_duplicate():
+    data = request.get_json()  # 클라이언트에서 보낸 JSON 데이터
+    user_id = data.get("UserId")
+    
+    existing_user = UserDao().get_user_by_id(user_id)
+    if existing_user:
+        return jsonify({"status": "error", "message": "이미 등록된 아이디입니다."})
+    else:
+        return jsonify({"status": "success", "message": "사용 가능한 아이디입니다."})

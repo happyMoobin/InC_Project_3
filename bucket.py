@@ -16,11 +16,12 @@ def bucket():
         product_name = item[0]
         product_quantity = item[1]
         product_detail=ProductDao().get_product(product_name)
-        
+       
         element['product_name'] = product_name
         element['price'] = int(product_detail['price'])
         element['quantity'] = int(product_quantity)
-
+        element['image_path'] = product_detail['image_path']
+        
         cart_items.append(element)
         total_price += element['price'] * element['quantity']
 
