@@ -25,10 +25,11 @@ def add_product():
     price = request.form['price']
     description = request.form['description']
     image = request.files['image'] 
+    sales_amount = 0
     
     image_url = upload_file_to_s3(image, name)
     
-    ProductDao().insert_product(name,price,description,image_url)
+    ProductDao().insert_product(name,price,description,image_url,sales_amount)
 
     products = ProductDao().get_all_products()
 
