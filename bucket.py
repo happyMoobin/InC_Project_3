@@ -2,6 +2,7 @@ from flask import *
 from DB.userDB import *
 from DB.productDB import *
 from DB.ordersDB import *
+from DB.data_stream import *
 from datetime import datetime
 
 blueprint = Blueprint('bucket', __name__, url_prefix='/bucket' ,template_folder='templates')
@@ -62,7 +63,6 @@ def remove_from_cart():
 @blueprint.route('/checkout', methods=['POST'])
 def checkout():
     try:
-        print(request.form['cart_items'])
         # 요청 데이터 받기
         string_cart_items = request.form['cart_items']  # 장바구니 데이터
         
@@ -77,11 +77,14 @@ def checkout():
         for item in items:
             total_price += item['price']*item['quantity'] 
             num_items.append([item['product_name'],item['quantity']])
-
-        # DynamoDB에 저장할 데이터 생성
+            
+            # Kinesis data stream 처리를 위한 데이터 
+            salesdataDao().send_sales_data(item['product_name'], item['quantity'])
+        
+        # order table DynamoDB에 저장할 데이터 생성
         order_data = {
             'order_id': str(datetime.now().timestamp()),  # 고유 주문 ID
-            'timestamp': str(datetime.now().strftime('%Y-%m-%d')),  # 주문 시간
+            'timestamp': str(datetime.now().strftime('%y-%m-%d')),  # 주문 시간
             'cart_items': num_items,  # 장바구니 상품 목록
             'num_item': int(item['quantity']), # 가격
             'total_price': total_price,
