@@ -45,21 +45,25 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>주문번호</th>
                     <th>제품</th>
                     <th>수량</th>
-                    <th>가격</th>
                     <th>날짜</th>
                 </tr>
             </thead>
             <tbody>
-                {% for product in products %}
-                <tr>
-                    <td>{{loop.index}}</td>
-                    <td>{{product.cart_item}}</td>
-                    <td>{{product.num_item}}</td>
-                    <td>{{product.total_price}}</td>
-                    <td>{{product.timestamp}}</td>
-                </tr>
+                {% set index = 1 %} <!-- 글로벌 번호 초기화 -->
+                {% for order_index, order in enumerate(orders, start=1) %}
+                    {% for product in order.cart_items %}
+                    <tr>
+                        <td>{{ product[2] }}</td> <!-- 글로벌 번호 -->
+                        <td>{{ order_index }}</td> <!-- 주문 번호 -->
+                        <td>{{ product[0] }}</td> <!-- 제품 이름 -->
+                        <td>{{ int(product[1]) }}</td> <!-- 수량 -->
+                        <td>{{ order.timestamp }}</td> <!-- 날짜 -->
+                    </tr>
+                    {% set index = index + 1 %} <!-- 글로벌 번호 증가 -->
+                    {% endfor %}
                 {% endfor %}
             </tbody>
         </table>

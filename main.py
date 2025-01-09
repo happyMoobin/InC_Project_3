@@ -12,4 +12,4 @@ def index():
 @blueprint.route('/main')
 def main():
     products = ProductDao().get_all_products()
-    return render_template('home.html', products=products)
+    return render_template('home.html', products=products, int=int)

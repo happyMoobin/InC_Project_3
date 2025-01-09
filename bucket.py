@@ -71,19 +71,25 @@ def checkout():
         # 문자열을 리스트로 변환
         items = json.loads(string_data)
         user_id = session['login_info'].get('UserID')
-        for item in items:
-            # DynamoDB에 저장할 데이터 생성
-            order_data = {
-                'order_id': str(datetime.now().timestamp()),  # 고유 주문 ID
-                'timestamp': str(datetime.now().strftime('%Y-%m-%d')),  # 주문 시간
-                'cart_item': item['product_name'],  # 장바구니 상품 목록
-                'num_item': int(item['quantity']), # 가격
-                'total_price': int(item['price']*item['quantity']),
-                'user_id': user_id
-            }
+        num_items = []
+        total_price = 0
 
-            # DynamoDB에 데이터 삽입
-            orderDao().put_order(order_data)
+        for item in items:
+            total_price += item['price']*item['quantity'] 
+            num_items.append([item['product_name'],item['quantity']])
+
+        # DynamoDB에 저장할 데이터 생성
+        order_data = {
+            'order_id': str(datetime.now().timestamp()),  # 고유 주문 ID
+            'timestamp': str(datetime.now().strftime('%Y-%m-%d')),  # 주문 시간
+            'cart_items': num_items,  # 장바구니 상품 목록
+            'num_item': int(item['quantity']), # 가격
+            'total_price': total_price,
+            'user_id': user_id
+        }
+
+        # DynamoDB에 데이터 삽입
+        orderDao().put_order(order_data)
 
         UserDao().remove_all_from_cart(user_id)
         # 성공 메시지와 메인 페이지로 리다이렉트

@@ -31,7 +31,7 @@
                     <img src="{{ product.image_path }}" class="card-img-top" alt="상품 이미지">
                     <div class="card-body">
                         <h5 class="card-title">{{ product.product_id }}</h5>
-                        <p class="card-text">{{ product.price }}</p>
+                        <p class="card-text"> 가격 : {{ int(product.price) }} 원</p>
                         <p class="card-text">{{ product.description }}</p>
                         <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#purchaseModal{{ product.product_id }}">구매하기</a>
                     </div>

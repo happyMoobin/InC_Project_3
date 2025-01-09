@@ -78,6 +78,10 @@ def check_duplicate():
 
 @blueprint.route('/mypage', methods=['GET','POST'])    
 def mypage():
-    products = orderDao().get_orders_by_id(session['login_info'].get('UserID'))
-    print(products)
-    return render_template('mypage.html', products=products)
+    orders = orderDao().get_orders_by_id(session['login_info'].get('UserID'))
+    index = 1 
+    for order in orders:
+        for product in order.get('cart_items'):
+            product.append(index)
+            index+=1
+    return render_template('mypage.html', orders=orders, int=int,enumerate=enumerate)
