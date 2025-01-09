@@ -81,7 +81,7 @@ def checkout():
         # DynamoDB에 저장할 데이터 생성
         order_data = {
             'order_id': str(datetime.now().timestamp()),  # 고유 주문 ID
-            'timestamp': str(datetime.now().strftime('%Y-%m-%d')),  # 주문 시간
+            'timestamp': str(datetime.now().strftime('%y-%m-%d')),  # 주문 시간
             'cart_items': num_items,  # 장바구니 상품 목록
             'num_item': int(item['quantity']), # 가격
             'total_price': total_price,
