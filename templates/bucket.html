@@ -70,7 +70,11 @@
 
         <div class="text-right">
             <h4>총 합계: {{ total_price }} 원</h4>
-            <a href="" class="btn btn-primary">결제하기</a>
+            <form action="/bucket/checkout" method="POST">
+                <input type="hidden" name="cart_items" value="{{ cart_items }}"> <!-- 장바구니 데이터 전달 -->
+                <input type="hidden" name="total_price" value="{{ total_price }}"> <!-- 총 가격 전달 -->
+                <button type="submit" class="btn btn-primary">결제하기</button>
+            </form>
         </div>
         
         {% else %}

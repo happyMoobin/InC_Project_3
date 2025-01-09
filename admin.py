@@ -15,7 +15,6 @@ def manage_user():
 @blueprint.route('/manage_product')
 def manage_product():
     products = ProductDao().get_all_products()
-    print(products)
     return render_template('manage_product.html',products=products)
 
 # 상품 관리

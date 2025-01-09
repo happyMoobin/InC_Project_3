@@ -1,6 +1,6 @@
 from flask import *
 import boto3
-import decimal
+from decimal import Decimal
 
 dynamodb = boto3.resource(
     'dynamodb',
@@ -17,7 +17,7 @@ class UserDao:
         # 모든 요소 조회
         response = table.scan()
         users = response['Items'] 
-        return users
+        return convert_decimal(users)
     
     # 사용자 조회 (id와 password로 확인)
     def get_user(self, id, password):
@@ -31,7 +31,7 @@ class UserDao:
         # 사용자 확인
         user = response.get('Item')
         if user and user.get('userpass') == password:
-            return user
+            return convert_decimal(user)
         return None
     
     # 사용자 정보 ID로 조회 (마이페이지에서 사용)
@@ -43,7 +43,7 @@ class UserDao:
         )
 
         # 사용자 정보 반환
-        return response.get('Item')
+        return convert_decimal(response.get('Item'))
     
     def insert_user(self, user_name, id, password, answer, cart=[]):
         # DynamoDB에 사용자 데이터 삽입
@@ -62,7 +62,7 @@ class UserDao:
     def get_current_user(self):
         user_id = session.get('UserID')  # 세션에서 사용자 ID를 가져옴
         if user_id:
-            return self.get_user_by_id(user_id)  # 사용자 ID로 사용자 정보 조회
+            return convert_decimal(self.get_user_by_id(user_id))  # 사용자 ID로 사용자 정보 조회
         return None
 
     def get_cart_by_id(self,user_id):
@@ -71,13 +71,13 @@ class UserDao:
                 'UserID': user_id  # UserId를 기본 키로 사용
             }
         )
-       
         # cart 확인
         cart = response.get('Item').get('cart')
+        
         if cart == None: 
             cart = []
 
-        return cart
+        return convert_decimal(cart)
     
     def update_cart(self,user_id,product_id, quantity):
         # 장바구니 업데이트
@@ -89,8 +89,7 @@ class UserDao:
             # 장바구니 항목 업데이트
             updated_cart = []
             item_found = False
-            print(response)
-            print(cart)
+            
             for item, curr_quantity in cart:
                 item_name = item
                 if item_name == product_id:
@@ -100,7 +99,7 @@ class UserDao:
                 updated_cart.append([item,curr_quantity])
             if not item_found:
                 # 상품이 없으면 새로 추가
-                updated_cart.append([product_id, decimal.Decimal(quantity)])
+                updated_cart.append([product_id, Decimal(quantity)])
             
             # 업데이트된 장바구니 저장
             response = table.update_item(
@@ -112,7 +111,7 @@ class UserDao:
                 ReturnValues="UPDATED_NEW"
             )
             flash("장바구니에 상품이 변경되었습니다.")
-            return response
+            return convert_decimal(response)
         except Exception as e:
             print(f"장바구니 업데이트 오류: {e}")
             flash("장바구니 추가에 실패했습니다.")
@@ -130,7 +129,7 @@ class UserDao:
                 item_name = item
                 if item_name == product_id:
                     continue
-                updated_cart.append([item,decimal.Decimal(curr_quantity)])
+                updated_cart.append([item,Decimal(curr_quantity)])
            
             # 업데이트된 장바구니 저장
             response = table.update_item(
@@ -146,3 +145,26 @@ class UserDao:
         except Exception as e:
             print(f"장바구니 업데이트 오류: {e}")
             flash("장바구니 삭제에 실패했습니다.")
+
+    def remove_all_from_cart(self, user_id):
+        response = table.get_item(Key={'UserID': user_id})
+        # 업데이트된 장바구니 저장
+        response = table.update_item(
+            Key={'UserID': user_id},
+            UpdateExpression="SET cart = :updated_cart",
+            ExpressionAttributeValues={
+                ':updated_cart': []
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+
+def convert_decimal(data):
+    """DynamoDB에서 반환된 데이터를 JSON 직렬화 가능하게 변환"""
+    if isinstance(data, list):
+        return [convert_decimal(item) for item in data]
+    elif isinstance(data, dict):
+        return {k: convert_decimal(v) for k, v in data.items()}
+    elif isinstance(data, Decimal):
+        return float(data)  # 또는 str(data)
+    else:
+        return data

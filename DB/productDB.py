@@ -1,5 +1,6 @@
 from flask import *
 import boto3
+from decimal import Decimal
 
 dynamodb = boto3.resource(
     'dynamodb',
@@ -16,7 +17,7 @@ class ProductDao:
         # 모든 요소 조회
         response = table.scan()
         products = response['Items'] 
-        return products
+        return convert_decimal(products)
     
     def get_product(self, product_id):
         response =  table.get_item(
@@ -25,7 +26,7 @@ class ProductDao:
             }
         )   
         product_detail = response.get('Item')
-        return product_detail
+        return convert_decimal(product_detail)
     
     def insert_product(self, id, price,description, image, sales_amount):
         # DynamoDB에 사용자 데이터 삽입
@@ -65,3 +66,14 @@ class ProductDao:
         except Exception as e:
             print("Error updating product:", str(e))
             raise
+
+def convert_decimal(data):
+    """DynamoDB에서 반환된 데이터를 JSON 직렬화 가능하게 변환"""
+    if isinstance(data, list):
+        return [convert_decimal(item) for item in data]
+    elif isinstance(data, dict):
+        return {k: convert_decimal(v) for k, v in data.items()}
+    elif isinstance(data, Decimal):
+        return float(data)  # 또는 str(data)
+    else:
+        return data

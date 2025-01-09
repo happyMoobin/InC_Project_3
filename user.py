@@ -1,5 +1,6 @@
 from flask import * 
 from DB.userDB import *
+from DB.ordersDB import *
 
 blueprint = Blueprint('user', __name__, url_prefix='/user' ,template_folder='templates')
 
@@ -74,3 +75,9 @@ def check_duplicate():
         return jsonify({"status": "error", "message": "이미 등록된 아이디입니다."})
     else:
         return jsonify({"status": "success", "message": "사용 가능한 아이디입니다."})
+
+@blueprint.route('/mypage', methods=['GET','POST'])    
+def mypage():
+    products = orderDao().get_orders_by_id(session['login_info'].get('UserID'))
+    print(products)
+    return render_template('mypage.html', products=products)

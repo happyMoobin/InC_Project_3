@@ -1,6 +1,8 @@
 from flask import * 
 from DB.userDB import *
 from DB.productDB import *
+from DB.ordersDB import *
+from datetime import datetime
 
 blueprint = Blueprint('bucket', __name__, url_prefix='/bucket' ,template_folder='templates')
 
@@ -55,3 +57,40 @@ def remove_from_cart():
         UserDao().remove_from_cart(user_id, product_id)
         return redirect(url_for('bucket.bucket'))
     return render_template('bucket.html')
+
+
+@blueprint.route('/checkout', methods=['POST'])
+def checkout():
+    try:
+        print(request.form['cart_items'])
+        # 요청 데이터 받기
+        string_cart_items = request.form['cart_items']  # 장바구니 데이터
+        
+        string_data = string_cart_items.replace("'", "\"")  # 작은따옴표를 큰따옴표로 변경
+
+        # 문자열을 리스트로 변환
+        items = json.loads(string_data)
+        user_id = session['login_info'].get('UserID')
+        for item in items:
+            # DynamoDB에 저장할 데이터 생성
+            order_data = {
+                'order_id': str(datetime.now().timestamp()),  # 고유 주문 ID
+                'timestamp': str(datetime.now().strftime('%Y-%m-%d')),  # 주문 시간
+                'cart_item': item['product_name'],  # 장바구니 상품 목록
+                'num_item': int(item['quantity']), # 가격
+                'total_price': int(item['price']*item['quantity']),
+                'user_id': user_id
+            }
+
+            # DynamoDB에 데이터 삽입
+            orderDao().put_order(order_data)
+
+        UserDao().remove_all_from_cart(user_id)
+        # 성공 메시지와 메인 페이지로 리다이렉트
+        flash("결제가 완료되었습니다!")
+        return redirect(url_for('main.main'))
+
+    except Exception as e:
+        print("Error during checkout:", e)
+        flash("결제 중 오류가 발생했습니다.")
+        return redirect(url_for('main.main'))
