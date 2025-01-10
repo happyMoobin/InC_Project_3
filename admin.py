@@ -53,3 +53,7 @@ def delete_product(product_id):
     products = ProductDao().get_all_products()
     delete_object(product_id)
     return render_template('manage_product.html',products=products)
+
+@blueprint.route('/manage_order')
+def manage_order():
+    return render_template('manage_order.html')
