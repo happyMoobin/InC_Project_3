@@ -145,7 +145,38 @@
             </div>
         </div>
     </div>
-
+    <script>
+        // WebSocket 연결
+        const socket = new WebSocket("wss://ptziakchke.execute-api.ap-northeast-3.amazonaws.com/production/");
+    
+        // 연결이 열릴 때
+        socket.onopen = function () {
+            console.log("WebSocket connected");
+        };
+    
+        // 서버에서 메시지 수신
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            console.log("Received update:", data);
+    
+            // DOM 업데이트
+            const productRow = document.querySelector(`[data-product-id="${data.product_id}"]`);
+            if (productRow) {
+                const salesAmountCell = productRow.querySelector('.sales-amount');
+                salesAmountCell.textContent = data.sales_amount;
+            }
+        };
+    
+        // 연결이 닫힐 때
+        socket.onclose = function () {
+            console.log("WebSocket disconnected");
+        };
+    
+        // 에러 처리
+        socket.onerror = function (error) {
+            console.error("WebSocket error:", error);
+        };
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
