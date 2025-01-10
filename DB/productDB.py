@@ -28,15 +28,14 @@ class ProductDao:
         product_detail = response.get('Item')
         return convert_decimal(product_detail)
     
-    def insert_product(self, id, price,description, image, sales_amount):
+    def insert_product(self, id, price,description, image):
         # DynamoDB에 사용자 데이터 삽입
         response = table.put_item(
             Item={
                 'product_id': id, 
                 'price': price,
                 'description': description,
-                'image_path': image,
-                'sales_amount': sales_amount
+                'image_path': image
             }
         )
 
