@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>제품 관리</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
 </head>
@@ -53,7 +54,7 @@
                     <td>{{ product.product_id }}</td>
                     <td>{{ product.price }}</td>
                     <td>{{ product.description }}</td>
-                    <td>{{ product.sales_amount }}</td>
+                    <td id="product-{{ product.product_id }}-quantity">{{ product.sales_amount }}</td>
                     <td>
                         <!-- 수정 버튼 -->
                         <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#editProductModal{{ product.product_id }}">
@@ -145,7 +146,47 @@
             </div>
         </div>
     </div>
+    <script>
+        console.log("Document Ready 시작");
+        $(document).ready(function() {
+            // WebSocket으로 서버와 연결 (예시)
+            const socket = new WebSocket('wss://0m8y0c00d1.execute-api.ap-northeast-3.amazonaws.com/production/');
+            console.log('WebSocket 연결 시도');
 
+            socket.onopen = function() {
+                console.log('WebSocket 연결 성공');
+            };
+
+            socket.onerror = function(event) {
+                console.log('WebSocket 오류 발생', event);
+            };
+
+            socket.onclose = function(event) {
+                console.log('WebSocket 연결 종료', event);
+            };
+
+            socket.onmessage = function(event) {
+                console.log('메시지 받음:', event.data); 
+                const message = JSON.parse(event.data);
+                // 메시지에 포함된 변경된 데이터를 처리하고 UI 업데이트
+                updateCart(message);
+            };
+            
+            // Cart 업데이트 함수
+            function updateCart(message) {
+
+                const product_id = message.product_id;
+                const quantity = message.quantity;
+        
+                // HTML 요소 업데이트
+                $('#product-' + product_id + '-quantity').text(quantity);
+                // 필요에 따라 페이지 새로고침도 가능
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);  
+            }
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>

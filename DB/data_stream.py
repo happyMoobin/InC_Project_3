@@ -73,6 +73,6 @@ def convert_decimal(data):
         return data
 # # 판매 데이터 샘플 전송
 # if __name__ == "__main__":
-#     for i in range(5,6):  # 10개의 판매 데이터 전송
-#         send_sales_data(product_id=f"product-{i}", quantity=i + 1, timestamp=int(time.time()))
-#         time.sleep(1)  # 1초 간격
+#     for i in range(4):  # 10개의 판매 데이터 전송
+#         salesdataDao().send_sales_data(product_id=f"test1", quantity=1)
+#         time.sleep(10)  # 1초 간격
