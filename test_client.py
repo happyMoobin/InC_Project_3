@@ -32,6 +32,6 @@ items = [
 if __name__ == "__main__":
 
     while True:
-        # 테스트 실행
+        # 테스트 실행 3초 마다 랜덤으로 주문
         test_checkout(items[random.randint(0, 3)])
         time.sleep(3)
