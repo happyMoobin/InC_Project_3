@@ -177,13 +177,13 @@
 
                 const product_id = message.product_id;
                 const quantity = message.quantity;
-        
+                console.log(quantity );
                 // HTML 요소 업데이트
                 $('#product-' + product_id + '-quantity').text(quantity);
                 // 필요에 따라 페이지 새로고침도 가능
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);  
+                // setTimeout(() => {
+                //     location.reload();
+                // }, 1000);  
             }
         });
     </script>
