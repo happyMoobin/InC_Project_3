@@ -5,16 +5,16 @@ from decimal import Decimal
 
 kinesis_client = boto3.client(
     'kinesis', 
-    region_name='ap-northeast-3'
+    region_name='ap-northeast-2'
 )
 
 
 dynamodb = boto3.resource(
     'dynamodb',
-    region_name='ap-northeast-3'
+    region_name='ap-northeast-2'
 )
 
-table = dynamodb.Table('sales_data')
+table = dynamodb.Table('sales')
 
 stream_name = "mini3-data-stream"
 
@@ -34,7 +34,7 @@ class salesdataDao:
         # DynamoDB에 사용자 데이터 삽입
         response = table.put_item(
             Item={
-                'product_id': product_id,  # UserId를 기본 키로 사용
+                'product_id': product_id,  # product_id를 기본 키로 사용
                 'quantity': 0
             }
         )

@@ -11,7 +11,7 @@ blueprint = Blueprint('bucket', __name__, url_prefix='/bucket' ,template_folder=
 @blueprint.route('/bucket', methods=['GET', 'POST'])
 def bucket():
     #모든 리스트 반환
-    items = UserDao().get_cart_by_id(session['login_info'].get('UserID') )
+    items = UserDao().get_cart_by_id(session['login_info'].get('user_id') )
     cart_items = []
     total_price = 0
     for item in items:
@@ -39,7 +39,7 @@ def add_cart():
         flash("로그인이 필요합니다.")
         return redirect(url_for('main.main'))
     
-    user_id = session['login_info'].get('UserID')
+    user_id = session['login_info'].get('user_id')
     product_id = request.form.get('product_id')
     quantity = int(request.form.get('quantity'))
     
@@ -51,7 +51,7 @@ def add_cart():
 #장바구니
 @blueprint.route('/remove_from_cart', methods=['POST'])
 def remove_from_cart():
-    user_id = session['login_info'].get('UserID')
+    user_id = session['login_info'].get('user_id')
     product_id = request.form.get('product_id')
 
     if request.method == 'POST':
@@ -67,10 +67,10 @@ def checkout():
         string_cart_items = request.form['cart_items']  # 장바구니 데이터
         
         string_data = string_cart_items.replace("'", "\"")  # 작은따옴표를 큰따옴표로 변경
-
+        
         # 문자열을 리스트로 변환
         items = json.loads(string_data)
-        user_id = session['login_info'].get('UserID')
+        user_id = session['login_info'].get('user_id')
         num_items = []
         total_price = 0
 
@@ -79,7 +79,7 @@ def checkout():
             num_items.append([item['product_name'],item['quantity']])
             
             # Kinesis data stream 처리를 위한 데이터 
-            salesdataDao().send_sales_data(item['product_name'], item['quantity'])
+            # salesdataDao().send_sales_data(item['product_name'], item['quantity'])
         
         # order table DynamoDB에 저장할 데이터 생성
         order_data = {

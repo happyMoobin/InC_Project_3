@@ -38,7 +38,7 @@ def logout():
 @blueprint.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        id = request.form['UserId']
+        id = request.form['user_id']
         password = request.form['UserPw']
         confirm_password = request.form['UserPwConfirm']
         user_name = request.form['UserName']
@@ -68,7 +68,7 @@ def signup():
 @blueprint.route('/check_duplicate', methods=['POST'])
 def check_duplicate():
     data = request.get_json()  # 클라이언트에서 보낸 JSON 데이터
-    user_id = data.get("UserId")
+    user_id = data.get("user_id")
     
     existing_user = UserDao().get_user_by_id(user_id)
     if existing_user:

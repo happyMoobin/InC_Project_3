@@ -4,7 +4,7 @@ import time
 def test_checkout(cart_items):
     client = app.test_client()  # Flask 테스트 클라이언트 생성
     with client.session_transaction() as session:
-        session['login_info'] = {'UserID': 'test_user'}  # 세션 데이터 설정
+        session['login_info'] = {'user_id': 'test_user'}  # 세션 데이터 설정
 
     response = client.post('/bucket/checkout', data={
         'cart_items': str(cart_items)

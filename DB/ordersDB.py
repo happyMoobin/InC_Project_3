@@ -5,7 +5,7 @@ from decimal import Decimal
 
 dynamodb = boto3.resource(
     'dynamodb',
-    region_name='ap-northeast-3'
+    region_name='ap-northeast-2'
 )
 
 table = dynamodb.Table('orders')

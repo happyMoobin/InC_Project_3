@@ -4,10 +4,10 @@ from decimal import Decimal
 
 dynamodb = boto3.resource(
     'dynamodb',
-    region_name='ap-northeast-3'
+    region_name='ap-northeast-2'
 )
 
-table = dynamodb.Table('Users')
+table = dynamodb.Table('users')
 
 class UserDao:
     def __init__(self):
@@ -24,7 +24,7 @@ class UserDao:
         
         response = table.get_item(
             Key={
-                'UserID': id  # UserId를 기본 키로 사용
+                'user_id': id  # UserId를 기본 키로 사용
             }
         )
        
@@ -38,7 +38,7 @@ class UserDao:
     def get_user_by_id(self, user_id):
         response = table.get_item(
             Key={
-                'UserID': user_id
+                'user_id': user_id
             }
         )
 
@@ -49,7 +49,7 @@ class UserDao:
         # DynamoDB에 사용자 데이터 삽입
         response = table.put_item(
             Item={
-                'UserID': id,  # UserId를 기본 키로 사용
+                'user_id': id,  # UserId를 기본 키로 사용
                 'username': user_name,
                 'userpass': password,
                 'answer': answer,
@@ -60,7 +60,7 @@ class UserDao:
         return f"Insert OK: {response['ResponseMetadata']['HTTPStatusCode']}"
 
     def get_current_user(self):
-        user_id = session.get('UserID')  # 세션에서 사용자 ID를 가져옴
+        user_id = session.get('user_id')  # 세션에서 사용자 ID를 가져옴
         if user_id:
             return convert_decimal(self.get_user_by_id(user_id))  # 사용자 ID로 사용자 정보 조회
         return None
@@ -68,7 +68,7 @@ class UserDao:
     def get_cart_by_id(self,user_id):
         response = table.get_item(
             Key={
-                'UserID': user_id  # UserId를 기본 키로 사용
+                'user_id': user_id  # UserId를 기본 키로 사용
             }
         )
         # cart 확인
@@ -83,7 +83,7 @@ class UserDao:
         # 장바구니 업데이트
         try:
             # 현재 장바구니 가져오기
-            response = table.get_item(Key={'UserID': user_id})
+            response = table.get_item(Key={'user_id': user_id})
             cart = response.get('Item').get('cart')
          
             # 장바구니 항목 업데이트
@@ -103,7 +103,7 @@ class UserDao:
             
             # 업데이트된 장바구니 저장
             response = table.update_item(
-                Key={'UserID': user_id},
+                Key={'user_id': user_id},
                 UpdateExpression="SET cart = :updated_cart",
                 ExpressionAttributeValues={
                     ':updated_cart': updated_cart
@@ -120,7 +120,7 @@ class UserDao:
         # 장바구니 업데이트
         try:
             # 현재 장바구니 가져오기
-            response = table.get_item(Key={'UserID': user_id})
+            response = table.get_item(Key={'user_id': user_id})
             cart = response.get('Item').get('cart')
             
             # 장바구니 항목 업데이트
@@ -133,7 +133,7 @@ class UserDao:
            
             # 업데이트된 장바구니 저장
             response = table.update_item(
-                Key={'UserID': user_id},
+                Key={'user_id': user_id},
                 UpdateExpression="SET cart = :updated_cart",
                 ExpressionAttributeValues={
                     ':updated_cart': updated_cart
@@ -147,10 +147,10 @@ class UserDao:
             flash("장바구니 삭제에 실패했습니다.")
 
     def remove_all_from_cart(self, user_id):
-        response = table.get_item(Key={'UserID': user_id})
+        response = table.get_item(Key={'user_id': user_id})
         # 업데이트된 장바구니 저장
         response = table.update_item(
-            Key={'UserID': user_id},
+            Key={'user_id': user_id},
             UpdateExpression="SET cart = :updated_cart",
             ExpressionAttributeValues={
                 ':updated_cart': []
